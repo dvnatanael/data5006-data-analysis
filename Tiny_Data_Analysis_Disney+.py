@@ -39,12 +39,15 @@ sns.set_theme(palette="pastel")
 
 # %%
 filename = "disney_plus_titles.csv"
-if "get_ipython" in dir() and "google.colab" in str(get_ipython()):
-    import gdown
+url = "https://drive.google.com/u/1/uc?id=118sEZB_-OfyXH130f-EED4KI26AXH8FO&export=download"
+# mirror_url = "https://drive.google.com/u/1/uc?id=1xlzqH8z2ChAO4xPpm3GDfslyni53Bn5j&export=download"
+try:
+    if "google.colab" in str(get_ipython()):  # type: ignore
+        import gdown  # type: ignore
 
-    url = "https://drive.google.com/u/1/uc?id=118sEZB_-OfyXH130f-EED4KI26AXH8FO&export=download"
-    # mirror_url = "https://drive.google.com/u/1/uc?id=1xlzqH8z2ChAO4xPpm3GDfslyni53Bn5j&export=download"
-    gdown.download(url, filename)
+        gdown.download(url, filename)
+except NameError:
+    pass
 
 # %%
 raw_df = pd.read_csv(filename)
