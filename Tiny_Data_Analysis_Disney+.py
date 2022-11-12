@@ -26,7 +26,6 @@ from typing import Literal
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from matplotlib.container import BarContainer
 from matplotlib.text import Text
 
 sns.set_theme(palette="pastel")
@@ -141,27 +140,25 @@ _ = p.set_xlabel("Release Year")
 
 # %%
 data = cleaned_df.index.get_level_values("date_added").strftime("%Y-%m").sort_values()
-p = sns.countplot(x=data.str.extract("([0-9]+)").loc[:, 0])
+p = sns.countplot(
+    x=data.str.extract("([0-9]+)").loc[:, 0],
+    color=sns.color_palette()[0],
+    saturation=0.75,
+    width=1.0,
+)
 p.set_xlabel("Year Added")
 _ = p.set_ylabel("Count")
 
 # %%
-p: plt.Axes = sns.countplot(x=data)
-
-bar_container: BarContainer = p.containers[0]
-labels: list[Text] = p.bar_label(bar_container)
-
-p.set_ybound(lower=0, upper=100)
-# add a value label for the clipped bar
-p.text(
-    x=bar_container.patches[1].get_center()[0],
-    y=100,
-    s=int(bar_container.datavalues[1]),
-    fontsize=labels[0].get_fontsize(),
-    ha="center",
-    va="bottom",
+p: plt.Axes = sns.countplot(
+    x=data, color=sns.color_palette()[0], saturation=0.75, width=1.0
 )
+
+p.bar_label(p.containers[0])
+p.set_yscale("log")
 p.set_xlabel("Date Added")
 p.set_ylabel("Count")
 
 _ = {rotate_label(label, rotation=60) for label in p.get_xticklabels()}
+
+# %%
