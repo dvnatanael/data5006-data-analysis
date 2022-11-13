@@ -209,3 +209,17 @@ ax.set_yscale("log")
 _ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
 
 # %%
+data = cleaned_df["title"].str.len()
+p = sns.histplot(x=data)
+p.set_title("Title Length vs. Count")
+p.set_xlabel("Title Length (characters)")
+_ = p.set_ylabel("Count")
+
+# %%
+data = cleaned_df["title"].str.findall(r"\w+").apply(len)
+p = sns.histplot(x=data, discrete=True)
+p.set_title("Title Length vs. Count")
+p.set_xlabel("Title Length (words)")
+_ = p.set_ylabel("Count")
+
+# %%
