@@ -199,3 +199,13 @@ ax.set_yscale("log")
 _ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
 
 # %%
+data = cleaned_df["listed_in"].explode().sort_values()
+fig, ax = plt.subplots(figsize=(9.6, 4.8))
+sns.countplot(x=data, ax=ax)
+ax.set_title("Genre vs. Count")
+ax.set_xlabel("Genre")
+ax.set_ylabel("Count")
+ax.set_yscale("log")
+_ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
+
+# %%
