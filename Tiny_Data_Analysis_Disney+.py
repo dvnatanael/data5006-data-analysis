@@ -225,6 +225,9 @@ p.set_title("Title Length vs. Count")
 p.set_xlabel("Title Length (words)")
 _ = p.set_ylabel("Count")
 
+# %% [markdown]
+# ### Ignore NA values for cast
+
 # %%
 data = cleaned_df[["cast"]].explode("cast").groupby("cast").size().value_counts()
 p = sns.lineplot(data)
