@@ -123,70 +123,79 @@ cleaned_df  # type: ignore
 
 # %%
 data = cleaned_df["title"].groupby(level="type").count().sort_values(ascending=False)
-plt.pie(
+fig, ax = plt.subplots()
+ax.pie(
     x=data,
     labels=data.index.get_level_values("type"),  # type: ignore
     autopct=lambda x: int(x / 100 * data.sum()),
 )
-_ = plt.title("Show Types")
+_ = ax.set_title("Show Types")
 
 # %%
-p = sns.countplot(cleaned_df, x=cleaned_df.index.get_level_values("rating"))
-p.set_title("Rating vs. Count")
-p.set_xlabel("Rating")
-p.set_ylabel("Count")
-_ = {rotate_label(label, rotation=30) for label in p.get_xticklabels()}
+fig, ax = plt.subplots()
+sns.countplot(cleaned_df, x=cleaned_df.index.get_level_values("rating"), ax=ax)
+ax.set_title("Rating vs. Count")
+ax.set_xlabel("Rating")
+ax.set_ylabel("Count")
+_ = {rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
 
 # %%
-p = sns.histplot(data=cleaned_df, x="release_year")
-p.set_title("Release Year vs. Count")
-p.set_xlabel("Release Year")
-_ = p.set_ylabel("Count")
+fig, ax = plt.subplots()
+sns.histplot(data=cleaned_df, x="release_year", ax=ax)
+ax.set_title("Release Year vs. Count")
+ax.set_xlabel("Release Year")
+_ = ax.set_ylabel("Count")
 
 # %%
 data = cleaned_df.index.get_level_values("date_added").strftime("%Y-%m").sort_values()  # type: ignore
-p = sns.countplot(
+fig, ax = plt.subplots()
+sns.countplot(
     x=data.str.extract("([0-9]+)").loc[:, 0],
     color=sns.color_palette()[0],  # type: ignore
     saturation=0.75,
     width=1.0,
+    ax=ax,
 )
-p.set_title("Year Added vs. Count")
-p.set_xlabel("Year Added")
-_ = p.set_ylabel("Count")
+ax.set_title("Year Added vs. Count")
+ax.set_xlabel("Year Added")
+_ = ax.set_ylabel("Count")
 
 # %%
-p = sns.countplot(
+fig, ax = plt.subplots()
+sns.countplot(
     x=data,
     color=sns.color_palette()[0],  # type: ignore
     saturation=0.75,
     width=1.0,
+    ax=ax,
 )
-p.set_title("Date Added vs. Count")
-p.set_xlabel("Date Added")
-p.set_ylabel("Count")
-p.bar_label(p.containers[0])
-p.set_yscale("log")
-_ = {rotate_label(label, rotation=60) for label in p.get_xticklabels()}
+ax.set_title("Date Added vs. Count")
+ax.set_xlabel("Date Added")
+ax.set_ylabel("Count")
+ax.bar_label(ax.containers[0])  # type: ignore
+ax.set_yscale("log")
+_ = {rotate_label(label, rotation=60) for label in ax.get_xticklabels()}
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
-p = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))  # type: ignore
-p.set_title("Movie Duration vs. Count")
-p.set_xlabel("Duration (minutes)")
-_ = p.set_ylabel("Count")
+fig, ax = plt.subplots()
+ax = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))  # type: ignore
+ax.set_title("Movie Duration vs. Count")
+ax.set_xlabel("Duration (minutes)")
+_ = ax.set_ylabel("Count")
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "TV Show"]
-p = sns.histplot(x=data["duration"].clip(0, 16), discrete=True, log_scale=(0, 10))
-p.set_title("TV Show Seasons vs. Count")
-p.set_xlabel("Number of Seasons")
-p.set_ylabel("Count")
-p.bar_label(p.containers[1], labels=p.containers[1].datavalues)
+fig, ax = plt.subplots()
+ax = sns.histplot(x=data["duration"].clip(0, 16), discrete=True, log_scale=(0, 10))
+ax.set_title("TV Show Seasons vs. Count")
+ax.set_xlabel("Number of Seasons")
+ax.set_ylabel("Count")
+ax.bar_label(ax.containers[1], labels=ax.containers[1].datavalues)
 
-labels: list[Text] = p.get_xticklabels()
+labels: list[Text] = ax.get_xticklabels()
 labels[-2].set_text("16+")
-_ = p.set_xticklabels(labels)
+_ = ax.set_xticklabels(labels)
 
 # %% [markdown]
 # Ignore NA values for country
@@ -213,26 +222,29 @@ _ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
 
 # %%
 data = cleaned_df["title"].str.len()
-p = sns.histplot(x=data)
-p.set_title("Title Length vs. Count")
-p.set_xlabel("Title Length (characters)")
-_ = p.set_ylabel("Count")
+fig, ax = plt.subplots()
+ax = sns.histplot(x=data)
+ax.set_title("Title Length vs. Count")
+ax.set_xlabel("Title Length (characters)")
+_ = ax.set_ylabel("Count")
 
 # %%
 data = cleaned_df["title"].str.findall(r"\w+").apply(len)
-p = sns.histplot(x=data, discrete=True)
-p.set_title("Title Length vs. Count")
-p.set_xlabel("Title Length (words)")
-_ = p.set_ylabel("Count")
+fig, ax = plt.subplots()
+ax = sns.histplot(x=data, discrete=True)
+ax.set_title("Title Length vs. Count")
+ax.set_xlabel("Title Length (words)")
+_ = ax.set_ylabel("Count")
 
 # %% [markdown]
 # ### Ignore NA values for cast
 
 # %%
 data = cleaned_df[["cast"]].explode("cast").groupby("cast").size().value_counts()
-p = sns.lineplot(data)
-p.set_title("Movies Played vs. Cast Count")
-p.set_xlabel("Number of Movies Played")
-p.set_ylabel("Count")
+fig, ax = plt.subplots()
+ax = sns.lineplot(data)
+ax.set_title("Movies Played vs. Cast Count")
+ax.set_xlabel("Number of Movies Played")
+ax.set_ylabel("Count")
 
 # %%
