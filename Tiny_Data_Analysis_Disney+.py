@@ -132,11 +132,16 @@ _ = plt.title("Show Types")
 
 # %%
 p = sns.countplot(cleaned_df, x=cleaned_df.index.get_level_values("rating"))
+p.set_title("Rating vs. Count")
+p.set_xlabel("Rating")
+p.set_ylabel("Count")
 _ = {rotate_label(label, rotation=30) for label in p.get_xticklabels()}
 
 # %%
 p: plt.Axes = sns.histplot(data=cleaned_df, x="release_year")
-_ = p.set_xlabel("Release Year")
+p.set_title("Release Year vs. Count")
+p.set_xlabel("Release Year")
+_ = p.set_ylabel("Count")
 
 # %%
 data = cleaned_df.index.get_level_values("date_added").strftime("%Y-%m").sort_values()
@@ -146,6 +151,7 @@ p = sns.countplot(
     saturation=0.75,
     width=1.0,
 )
+p.set_title("Year Added vs. Count")
 p.set_xlabel("Year Added")
 _ = p.set_ylabel("Count")
 
@@ -153,24 +159,27 @@ _ = p.set_ylabel("Count")
 p: plt.Axes = sns.countplot(
     x=data, color=sns.color_palette()[0], saturation=0.75, width=1.0
 )
-
-p.bar_label(p.containers[0])
-p.set_yscale("log")
+p.set_title("Date Added vs. Count")
 p.set_xlabel("Date Added")
 p.set_ylabel("Count")
-
+p.bar_label(p.containers[0])
+p.set_yscale("log")
 _ = {rotate_label(label, rotation=60) for label in p.get_xticklabels()}
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
 p = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))
-_ = p.set_xlabel("Duration (minutes)")
+p.set_title("Movie Duration vs. Count")
+p.set_xlabel("Duration (minutes)")
+_ = p.set_ylabel("Count")
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "TV Show"]
 p = sns.histplot(x=data["duration"].clip(0, 16), discrete=True, log_scale=(0, 10))
+p.set_title("TV Show Seasons vs. Count")
+p.set_xlabel("Number of Seasons")
+p.set_ylabel("Count")
 p.bar_label(p.containers[1], labels=p.containers[1].datavalues)
-p.set_xlabel("Duration (seasons)")
 
 labels: list[Text] = p.get_xticklabels()
 labels[-2] = "16+"
