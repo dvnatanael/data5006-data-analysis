@@ -162,3 +162,18 @@ p.set_ylabel("Count")
 _ = {rotate_label(label, rotation=60) for label in p.get_xticklabels()}
 
 # %%
+data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
+p = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))
+_ = p.set_xlabel("Duration (minutes)")
+
+# %%
+data = cleaned_df[cleaned_df.index.get_level_values("type") == "TV Show"]
+p = sns.histplot(x=data["duration"].clip(0, 16), discrete=True, log_scale=(0, 10))
+p.bar_label(p.containers[1], labels=p.containers[1].datavalues)
+p.set_xlabel("Duration (seasons)")
+
+labels: list[Text] = p.get_xticklabels()
+labels[-2] = "16+"
+_ = p.set_xticklabels(labels)
+
+# %%
