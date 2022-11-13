@@ -87,7 +87,7 @@ def rotate_label(
         align: The horizontal alignment of the resulting object. Defaults to "right".
     """
     label.set_rotation(rotation)
-    label.set_ha(align)
+    label.set_horizontalalignment(align)
 
 
 # %% [markdown]
@@ -113,7 +113,7 @@ cleaned_df = (
 )
 
 cleaned_df.info()
-cleaned_df
+cleaned_df  # type: ignore
 
 # %% [markdown]
 # ---
@@ -125,7 +125,7 @@ cleaned_df
 data = cleaned_df["title"].groupby(level="type").count().sort_values(ascending=False)
 plt.pie(
     x=data,
-    labels=data.index.get_level_values("type"),
+    labels=data.index.get_level_values("type"),  # type: ignore
     autopct=lambda x: int(x / 100 * data.sum()),
 )
 _ = plt.title("Show Types")
@@ -138,16 +138,16 @@ p.set_ylabel("Count")
 _ = {rotate_label(label, rotation=30) for label in p.get_xticklabels()}
 
 # %%
-p: plt.Axes = sns.histplot(data=cleaned_df, x="release_year")
+p = sns.histplot(data=cleaned_df, x="release_year")
 p.set_title("Release Year vs. Count")
 p.set_xlabel("Release Year")
 _ = p.set_ylabel("Count")
 
 # %%
-data = cleaned_df.index.get_level_values("date_added").strftime("%Y-%m").sort_values()
+data = cleaned_df.index.get_level_values("date_added").strftime("%Y-%m").sort_values()  # type: ignore
 p = sns.countplot(
     x=data.str.extract("([0-9]+)").loc[:, 0],
-    color=sns.color_palette()[0],
+    color=sns.color_palette()[0],  # type: ignore
     saturation=0.75,
     width=1.0,
 )
@@ -156,8 +156,11 @@ p.set_xlabel("Year Added")
 _ = p.set_ylabel("Count")
 
 # %%
-p: plt.Axes = sns.countplot(
-    x=data, color=sns.color_palette()[0], saturation=0.75, width=1.0
+p = sns.countplot(
+    x=data,
+    color=sns.color_palette()[0],  # type: ignore
+    saturation=0.75,
+    width=1.0,
 )
 p.set_title("Date Added vs. Count")
 p.set_xlabel("Date Added")
@@ -168,7 +171,7 @@ _ = {rotate_label(label, rotation=60) for label in p.get_xticklabels()}
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
-p = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))
+p = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))  # type: ignore
 p.set_title("Movie Duration vs. Count")
 p.set_xlabel("Duration (minutes)")
 _ = p.set_ylabel("Count")
@@ -182,7 +185,7 @@ p.set_ylabel("Count")
 p.bar_label(p.containers[1], labels=p.containers[1].datavalues)
 
 labels: list[Text] = p.get_xticklabels()
-labels[-2] = "16+"
+labels[-2].set_text("16+")
 _ = p.set_xticklabels(labels)
 
 # %% [markdown]
