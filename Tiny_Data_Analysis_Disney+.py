@@ -185,4 +185,17 @@ labels: list[Text] = p.get_xticklabels()
 labels[-2] = "16+"
 _ = p.set_xticklabels(labels)
 
+# %% [markdown]
+# Ignore NA values for country
+
+# %%
+data = cleaned_df["country"].dropna().explode().sort_values()
+fig, ax = plt.subplots(figsize=(9.6, 4.8))
+sns.countplot(x=data, ax=ax)
+ax.set_title("Country vs. Count")
+ax.set_xlabel("Country")
+ax.set_ylabel("Count")
+ax.set_yscale("log")
+_ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
+
 # %%
