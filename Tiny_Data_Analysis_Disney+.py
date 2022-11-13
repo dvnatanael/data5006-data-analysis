@@ -223,3 +223,10 @@ p.set_xlabel("Title Length (words)")
 _ = p.set_ylabel("Count")
 
 # %%
+data = cleaned_df[["cast"]].explode("cast").groupby("cast").size().value_counts()
+p = sns.lineplot(data)
+p.set_title("Movies Played vs. Cast Count")
+p.set_xlabel("Number of Movies Played")
+p.set_ylabel("Count")
+
+# %%
