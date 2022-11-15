@@ -21,9 +21,16 @@
 # Please create a copy to your own Google Drive by clicking **File > Save a copy in Drive**. After clicking, a new tab page will be opened.
 
 # %%
+# %matplotlib widget
+
+import json
+import os
+from itertools import combinations
 from typing import Literal
 
 import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.text import Text
@@ -90,6 +97,11 @@ def rotate_label(
     label.set_horizontalalignment(align)
 
 
+# %%
+def to_edges(cast: list) -> list:
+    return list(combinations(sorted(set(cast)), 2))
+
+
 # %% [markdown]
 # ---
 
@@ -138,6 +150,7 @@ ax.set_title("Rating vs. Count")
 ax.set_xlabel("Rating")
 ax.set_ylabel("Count")
 _ = {rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
 
 # %%
 fig, ax = plt.subplots()
@@ -174,7 +187,8 @@ ax.set_xlabel("Date Added")
 ax.set_ylabel("Count")
 ax.bar_label(ax.containers[0])  # type: ignore
 ax.set_yscale("log")
-_ = {rotate_label(label, rotation=60) for label in ax.get_xticklabels()}
+_ = {rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
@@ -208,7 +222,8 @@ ax.set_title("Country vs. Count")
 ax.set_xlabel("Country")
 ax.set_ylabel("Count")
 ax.set_yscale("log")
-_ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
+_ = {rotate_label(label, 45) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
 
 # %%
 data = cleaned_df["listed_in"].explode().sort_values()
@@ -218,7 +233,8 @@ ax.set_title("Genre vs. Count")
 ax.set_xlabel("Genre")
 ax.set_ylabel("Count")
 ax.set_yscale("log")
-_ = {rotate_label(label, 60) for label in ax.get_xticklabels()}
+_ = {rotate_label(label, 45) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
 
 # %%
 data = cleaned_df["title"].str.len()
@@ -246,5 +262,82 @@ ax = sns.lineplot(data)
 ax.set_title("Movies Played vs. Cast Count")
 ax.set_xlabel("Number of Movies Played")
 ax.set_ylabel("Count")
+
+# %% [markdown]
+# ### Cast Connectivity Graph
+
+# %%
+# find all edges between every cast and every other cast
+edges_df: pd.DataFrame = (
+    cleaned_df["cast"]
+    .dropna()
+    .reset_index(drop=True)
+    .apply(to_edges)
+    .explode(ignore_index=True)  # type: ignore
+    .dropna()
+    .apply(pd.Series)
+    .rename(columns={i: v for i, v in enumerate(("source", "target"))})
+    .convert_dtypes()
+)
+# set the weight of each edge as the number of occurrences of said edge
+weighted_edges_df = pd.merge(
+    edges_df.drop_duplicates(),
+    edges_df.value_counts().rename("weight"),
+    left_on=("source", "target"),
+    right_index=True,
+).sort_values("weight", ascending=False)
+# create a graph from the weighted edges
+G = nx.from_pandas_edgelist(weighted_edges_df, edge_attr=True)
+# extract the largest subgraph
+g = G.subgraph(max(nx.connected_components(G), key=len))
+
+# %%
+# calculate nodes plotting positions
+if "cast_graph_positions.json" not in os.listdir():
+
+    class NumpyEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, np.ndarray):
+                return list(obj)
+            return json.JSONEncoder.default(self, obj)
+
+    pos = pd.DataFrame(
+        nx.spring_layout(g, k=1 / (2 * np.sqrt(len(g))), iterations=1000, seed=42)
+    )
+    with open("cast_graph_positions.json", "w") as f:
+        json.dump(pos, f, cls=NumpyEncoder)
+else:
+    with open("cast_graph_positions.json") as f:
+        pos = json.load(f)
+pos_df = pd.DataFrame(pos).T
+
+# %%
+# transform `pos_df`
+transformed_pos_df = pos_df.sub(pos_df.loc["Jim Cummings"]).apply(
+    lambda x: x / (np.dot(x, x) ** 0.2 + 1e-8), axis="columns"
+)
+
+node_degree = pd.DataFrame(g.degree, columns=["cast", "degree"]).sort_values("degree")
+
+# plot the network
+fig, ax = plt.subplots(figsize=(16, 9))
+nx.draw_networkx(
+    g,
+    pos=transformed_pos_df.T.to_dict(orient="list"),
+    ax=ax,
+    alpha=0.9,
+    cmap="rainbow",
+    edge_color="white",
+    node_color=[v for v in node_degree.loc[:, "degree"]],
+    node_size=[v**1.5 for v in node_degree.loc[:, "degree"]],
+    nodelist=node_degree.loc[:, "cast"],
+    width=0.1,
+    with_labels=False,
+)
+ax.axis("off")
+ax.set_title("Cast Connectivity Graph", color="white", size=24)
+fig.patch.set_facecolor("#131327")  # type: ignore
+fig.tight_layout()
+plt.savefig("test.svg", format="svg")
 
 # %%
