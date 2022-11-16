@@ -119,7 +119,6 @@ cleaned_df = (
         country=raw_df["country"].str.split(", "),
         listed_in=raw_df["listed_in"].str.split(", "),
     )
-    .convert_dtypes()
     .set_index(keys=["type", "rating", "release_year", "date_added", "show_id"])
     .sort_index()
 )
@@ -345,5 +344,25 @@ ax.set_title("Cast Connectivity Graph", color="white", size=24)
 fig.patch.set_facecolor("#131327")  # type: ignore
 fig.tight_layout()
 plt.savefig("test.svg", format="svg")
+
+# %% [markdown]
+# ## Plot Multiple Features Against Counts
+
+# %%
+fig, ax = plt.subplots()
+sns.countplot(
+    cleaned_df,
+    x=cleaned_df.index.get_level_values("rating"),
+    hue=cleaned_df.index.get_level_values("type"),
+)
+ax.set_title("Rating vs. Type vs. Count")
+ax.set_xlabel("Rating")
+_ = ax.set_ylabel("Count")
+
+# %%
+cleaned_df[
+    (cleaned_df.index.get_level_values("rating") == "PG")
+    & (cleaned_df.index.get_level_values("type") == "TV Show")
+]
 
 # %%
