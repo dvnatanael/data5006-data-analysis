@@ -298,7 +298,7 @@ if "cast_graph_positions.json" not in os.listdir():
     class NumpyEncoder(json.JSONEncoder):
         def default(self, obj):
             if isinstance(obj, np.ndarray):
-                return list(obj)
+                return {"__numpy__": list(obj)}
             return json.JSONEncoder.default(self, obj)
 
     pos = pd.DataFrame(
@@ -307,8 +307,14 @@ if "cast_graph_positions.json" not in os.listdir():
     with open("cast_graph_positions.json", "w") as f:
         json.dump(pos, f, cls=NumpyEncoder)
 else:
+
+    def as_numpy(dct: dict) -> np.ndarray | dict:
+        if "__numpy__" in dct:
+            return np.array(dct["__numpy__"])
+        return dct
+
     with open("cast_graph_positions.json") as f:
-        pos = json.load(f)
+        pos = json.load(f, object_hook=as_numpy)
 pos_df = pd.DataFrame(pos).T
 
 # %%
