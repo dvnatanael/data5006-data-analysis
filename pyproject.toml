@@ -13,3 +13,33 @@ treat_comments_as_code = ["# %%"]
 
 [tool.pycln]
 all = true
+
+[tool.poetry]
+name = "data5006-data-analysis"
+version = "0.1.0"
+description = "Package for DATA5006 Tiny Data Analysis Project"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.10.8"
+python-dotenv = "^0.21.0"
+jupyterlab = "^3.5.0"
+jupytext = "^1.14.1"
+nb-clean = "^2.4.0"
+matplotlib = "^3.6.2"
+ipympl = "^0.9.2"
+seaborn = "^0.12.1"
+networkx = "^2.8.8"
+numpy = "^1.23.4"
+pandas = "^1.5.1"
+scipy = "^1.9.3"
+black = "^22.10.0"
+isort = "^5.10.1"
+pycln = "^2.1.2"
+pre-commit = "^2.20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
