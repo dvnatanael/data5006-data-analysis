@@ -386,16 +386,55 @@ sns.violinplot(
 axs[0].set_title("Release Year vs. Type")
 axs[0].set_xlabel("Type")
 axs[0].set_ylabel("Release Year")
-sns.histplot(
+p = sns.histplot(
     cleaned_df,
     x=cleaned_df.index.get_level_values("release_year"),
     hue=cleaned_df.index.get_level_values("type"),
     kde=True,
     ax=axs[1],
 )
+p.legend_.set_title("Type")
 axs[1].set_title("Release Year vs. Type vs. Count")
 axs[1].set_xlabel("Release Year")
 axs[1].set_ylabel("Count")
+_ = fig.tight_layout()
+
+# %%
+fig, ax = plt.subplots(figsize=(9.6, 4.8))
+data = cleaned_df.sort_index(level="date_added", sort_remaining=False)
+months_added_df = data.index.get_level_values("date_added").strftime("%Y-%m")  # type: ignore
+p = sns.histplot(
+    data,
+    x=months_added_df,
+    hue=data.index.get_level_values("type"),
+    discrete=True,
+    kde=True,
+    log_scale=(0, 10),
+    ax=ax,
+)
+p.legend_.set_title("Type")
+ax.set_title("Date Added vs. Type vs. Count")
+ax.set_xlabel("Date Added")
+ax.set_ylabel("Count")
+{rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
+
+# %%
+fig, ax = plt.subplots(figsize=(9.6, 4.8))
+data = cleaned_df.sort_index(level="date_added", sort_remaining=False)
+months_added_df = data.index.get_level_values("date_added").strftime("%Y")  # type: ignore
+p = sns.histplot(
+    data,
+    x=months_added_df,
+    hue=data.index.get_level_values("type"),
+    discrete=True,
+    log_scale=(0, 10),
+    ax=ax,
+)
+p.legend_.set_title("Type")
+ax.set_title("Year Added vs. Type vs. Count")
+ax.set_xlabel("Year Added")
+ax.set_ylabel("Count")
 _ = fig.tight_layout()
 
 # %%
