@@ -366,3 +366,26 @@ cleaned_df[
 ]
 
 # %%
+fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.8))
+sns.violinplot(
+    x=cleaned_df.index.get_level_values("type"),
+    y=cleaned_df.index.get_level_values("release_year"),
+    scale="width",
+    ax=axs[0],
+)
+axs[0].set_title("Release Year vs. Type")
+axs[0].set_xlabel("Type")
+axs[0].set_ylabel("Release Year")
+sns.histplot(
+    cleaned_df,
+    x=cleaned_df.index.get_level_values("release_year"),
+    hue=cleaned_df.index.get_level_values("type"),
+    kde=True,
+    ax=axs[1],
+)
+axs[1].set_title("Release Year vs. Type vs. Count")
+axs[1].set_xlabel("Release Year")
+axs[1].set_ylabel("Count")
+_ = fig.tight_layout()
+
+# %%
