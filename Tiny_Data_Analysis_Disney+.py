@@ -156,6 +156,24 @@ _ = fig.tight_layout()
 
 # %%
 fig, ax = plt.subplots()
+sns.countplot(
+    cleaned_df,
+    x=cleaned_df.index.get_level_values("rating"),
+    hue=cleaned_df.index.get_level_values("type"),
+)
+ax.set_title("Rating vs. Type vs. Count")
+ax.set_xlabel("Rating")
+ax.set_ylabel("Count")
+_ = fig.tight_layout()
+
+# %%
+cleaned_df[
+    (cleaned_df.index.get_level_values("rating") == "PG")
+    & (cleaned_df.index.get_level_values("type") == "TV Show")
+]
+
+# %%
+fig, ax = plt.subplots()
 sns.histplot(data=cleaned_df, x="release_year", ax=ax)
 ax.set_title("Release Year vs. Count")
 ax.set_xlabel("Release Year")
@@ -163,24 +181,35 @@ ax.set_ylabel("Count")
 _ = fig.tight_layout()
 
 # %%
-data = cleaned_df.index.get_level_values("date_added").strftime("%Y-%m").sort_values()  # type: ignore
-fig, ax = plt.subplots()
-sns.countplot(
-    x=data.str.extract("([0-9]+)").loc[:, 0],
-    color=sns.color_palette()[0],  # type: ignore
-    saturation=0.75,
-    width=1.0,
-    ax=ax,
+fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.8))
+sns.violinplot(
+    x=cleaned_df.index.get_level_values("type"),
+    y=cleaned_df.index.get_level_values("release_year"),
+    scale="width",
+    ax=axs[0],
 )
-ax.set_title("Year Added vs. Count")
-ax.set_xlabel("Year Added")
-ax.set_ylabel("Count")
+axs[0].set_title("Release Year vs. Type")
+axs[0].set_xlabel("Type")
+axs[0].set_ylabel("Release Year")
+p = sns.histplot(
+    cleaned_df,
+    x=cleaned_df.index.get_level_values("release_year"),
+    hue=cleaned_df.index.get_level_values("type"),
+    kde=True,
+    ax=axs[1],
+)
+p.legend_.set_title("Type")
+axs[1].set_title("Release Year vs. Type vs. Count")
+axs[1].set_xlabel("Release Year")
+axs[1].set_ylabel("Count")
 _ = fig.tight_layout()
 
 # %%
+data = cleaned_df.sort_index(level="date_added", sort_remaining=False)
+date_added_df = data.index.get_level_values("date_added").strftime("%Y-%m")  # type: ignore
 fig, ax = plt.subplots()
 sns.countplot(
-    x=data,
+    x=date_added_df.sort_values(),
     color=sns.color_palette()[0],  # type: ignore
     saturation=0.75,
     width=1.0,
@@ -195,16 +224,52 @@ ax.set_yscale("log")
 _ = fig.tight_layout()
 
 # %%
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(9.6, 4.8))
+p = sns.histplot(
+    data,
+    x=date_added_df,
+    hue=data.index.get_level_values("type"),
+    discrete=True,
+    kde=True,
+    log_scale=(0, 10),
+    ax=ax,
+)
+p.legend_.set_title("Type")
+ax.set_title("Date Added vs. Type vs. Count")
+ax.set_xlabel("Date Added")
+ax.set_ylabel("Count")
+{rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
+
+# %%
 data = cleaned_df.assign(
     **{"month_added": (cleaned_df.index.get_level_values("date_added").strftime("%m"))}  # type: ignore
 ).sort_values("month_added")
+fig, ax = plt.subplots()
 p = sns.histplot(
     data,
     x="month_added",
     discrete=True,
     ax=ax,
 )
+ax.set_title("Month Added vs. Count")
+ax.set_xlabel("Month Added")
+ax.set_ylabel("Count")
+ax.set_xticklabels(list(calendar.month_name[1:]))
+{rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
+
+# %%
+fig, ax = plt.subplots()
+p = sns.histplot(
+    data,
+    x="month_added",
+    hue=data.index.get_level_values("type"),
+    discrete=True,
+    log_scale=(0, 10),
+    ax=ax,
+)
+p.legend_.set_title("Type")
 ax.set_title("Month Added vs. Type vs. Count")
 ax.set_xlabel("Month Added")
 ax.set_ylabel("Count")
@@ -372,109 +437,5 @@ ax.set_title("Cast Connectivity Graph", color="white", size=24)
 fig.patch.set_facecolor("#131327")  # type: ignore
 fig.tight_layout()
 plt.savefig("test.svg", format="svg")
-
-# %% [markdown]
-# ## Plot Multiple Features Against Counts
-
-# %%
-fig, ax = plt.subplots()
-sns.countplot(
-    cleaned_df,
-    x=cleaned_df.index.get_level_values("rating"),
-    hue=cleaned_df.index.get_level_values("type"),
-)
-ax.set_title("Rating vs. Type vs. Count")
-ax.set_xlabel("Rating")
-ax.set_ylabel("Count")
-_ = fig.tight_layout()
-
-# %%
-cleaned_df[
-    (cleaned_df.index.get_level_values("rating") == "PG")
-    & (cleaned_df.index.get_level_values("type") == "TV Show")
-]
-
-# %%
-fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.8))
-sns.violinplot(
-    x=cleaned_df.index.get_level_values("type"),
-    y=cleaned_df.index.get_level_values("release_year"),
-    scale="width",
-    ax=axs[0],
-)
-axs[0].set_title("Release Year vs. Type")
-axs[0].set_xlabel("Type")
-axs[0].set_ylabel("Release Year")
-p = sns.histplot(
-    cleaned_df,
-    x=cleaned_df.index.get_level_values("release_year"),
-    hue=cleaned_df.index.get_level_values("type"),
-    kde=True,
-    ax=axs[1],
-)
-p.legend_.set_title("Type")
-axs[1].set_title("Release Year vs. Type vs. Count")
-axs[1].set_xlabel("Release Year")
-axs[1].set_ylabel("Count")
-_ = fig.tight_layout()
-
-# %%
-fig, ax = plt.subplots(figsize=(9.6, 4.8))
-data = cleaned_df.sort_index(level="date_added", sort_remaining=False)
-months_added_df = data.index.get_level_values("date_added").strftime("%Y-%m")  # type: ignore
-p = sns.histplot(
-    data,
-    x=months_added_df,
-    hue=data.index.get_level_values("type"),
-    discrete=True,
-    kde=True,
-    log_scale=(0, 10),
-    ax=ax,
-)
-p.legend_.set_title("Type")
-ax.set_title("Date Added vs. Type vs. Count")
-ax.set_xlabel("Date Added")
-ax.set_ylabel("Count")
-{rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
-_ = fig.tight_layout()
-
-# %%
-fig, ax = plt.subplots(figsize=(9.6, 4.8))
-data = cleaned_df.sort_index(level="date_added", sort_remaining=False)
-months_added_df = data.index.get_level_values("date_added").strftime("%Y")  # type: ignore
-p = sns.histplot(
-    data,
-    x=months_added_df,
-    hue=data.index.get_level_values("type"),
-    discrete=True,
-    log_scale=(0, 10),
-    ax=ax,
-)
-p.legend_.set_title("Type")
-ax.set_title("Year Added vs. Type vs. Count")
-ax.set_xlabel("Year Added")
-ax.set_ylabel("Count")
-_ = fig.tight_layout()
-
-# %%
-fig, ax = plt.subplots()
-data = cleaned_df.assign(
-    **{"month_added": (cleaned_df.index.get_level_values("date_added").strftime("%m"))}  # type: ignore
-).sort_values("month_added")
-p = sns.histplot(
-    data,
-    x="month_added",
-    hue=data.index.get_level_values("type"),
-    discrete=True,
-    log_scale=(0, 10),
-    ax=ax,
-)
-p.legend_.set_title("Type")
-ax.set_title("Month Added vs. Type vs. Count")
-ax.set_xlabel("Month Added")
-ax.set_ylabel("Count")
-ax.set_xticklabels(list(calendar.month_name[1:]))
-{rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
-_ = fig.tight_layout()
 
 # %%
