@@ -195,6 +195,24 @@ ax.set_yscale("log")
 _ = fig.tight_layout()
 
 # %%
+fig, ax = plt.subplots()
+data = cleaned_df.assign(
+    **{"month_added": (cleaned_df.index.get_level_values("date_added").strftime("%m"))}  # type: ignore
+).sort_values("month_added")
+p = sns.histplot(
+    data,
+    x="month_added",
+    discrete=True,
+    ax=ax,
+)
+ax.set_title("Month Added vs. Type vs. Count")
+ax.set_xlabel("Month Added")
+ax.set_ylabel("Count")
+ax.set_xticklabels(list(calendar.month_name[1:]))
+{rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
+_ = fig.tight_layout()
+
+# %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
 fig, ax = plt.subplots()
 ax = sns.histplot(data, x="duration", bins=185 // 5, binrange=(0, 185))  # type: ignore
