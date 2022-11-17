@@ -23,6 +23,7 @@
 # %%
 # %matplotlib widget
 
+import calendar
 import json
 import os
 from itertools import combinations
@@ -435,6 +436,27 @@ p.legend_.set_title("Type")
 ax.set_title("Year Added vs. Type vs. Count")
 ax.set_xlabel("Year Added")
 ax.set_ylabel("Count")
+_ = fig.tight_layout()
+
+# %%
+fig, ax = plt.subplots()
+data = cleaned_df.assign(
+    **{"month_added": (cleaned_df.index.get_level_values("date_added").strftime("%m"))}  # type: ignore
+).sort_values("month_added")
+p = sns.histplot(
+    data,
+    x="month_added",
+    hue=data.index.get_level_values("type"),
+    discrete=True,
+    log_scale=(0, 10),
+    ax=ax,
+)
+p.legend_.set_title("Type")
+ax.set_title("Month Added vs. Type vs. Count")
+ax.set_xlabel("Month Added")
+ax.set_ylabel("Count")
+ax.set_xticklabels(list(calendar.month_name[1:]))
+{rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
 
 # %%
