@@ -145,6 +145,9 @@ ax.pie(
 ax.set_title("Show Types")
 _ = fig.tight_layout()
 
+# %% [markdown]
+# Around 2/3 of show types in Disney+ are Movies, while the rest are TV Shows.
+
 # %%
 fig, ax = plt.subplots()
 sns.countplot(cleaned_df, x=cleaned_df.index.get_level_values("rating"), ax=ax)
@@ -153,6 +156,9 @@ ax.set_xlabel("Rating")
 ax.set_ylabel("Count")
 {rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
+
+# %% [markdown]
+# Most of Disney+ shows are suitable for all ages (G & TV-G), some might be unsuitable for younger children (PG & TV-PG).
 
 # %%
 fig, ax = plt.subplots()
@@ -166,6 +172,9 @@ ax.set_xlabel("Rating")
 ax.set_ylabel("Count")
 _ = fig.tight_layout()
 
+# %% [markdown]
+# TV shows are only rated with the TV-rating, while movies have both ratings (ex: PG & TV-PG)
+
 # %%
 cleaned_df[
     (cleaned_df.index.get_level_values("rating") == "PG")
@@ -178,7 +187,11 @@ sns.histplot(data=cleaned_df, x="release_year", ax=ax)
 ax.set_title("Release Year vs. Count")
 ax.set_xlabel("Release Year")
 ax.set_ylabel("Count")
+{rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
+
+# %% [markdown]
+# It seems like Disney is releasing more and more shows in the recent decades.
 
 # %%
 fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.8))
@@ -204,6 +217,9 @@ axs[1].set_xlabel("Release Year")
 axs[1].set_ylabel("Count")
 _ = fig.tight_layout()
 
+# %% [markdown]
+# The width of violin plot shows how many Disney+ shows are released each year. The wider the body of the 'violin', the more Disney+ shows are released in the particular year. As seen above, most movies and TV shows are released within year 2000-2020.
+
 # %%
 data = cleaned_df.sort_index(level="date_added", sort_remaining=False)
 date_added_df = data.index.get_level_values("date_added").strftime("%Y-%m")  # type: ignore
@@ -223,6 +239,9 @@ ax.set_yscale("log")
 {rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
 
+# %% [markdown]
+# Huge amount of Disney+ shows were added on November’19. According to Wikipedia, Disney+ was officially launched on November’19.
+
 # %%
 fig, ax = plt.subplots(figsize=(9.6, 4.8))
 p = sns.histplot(
@@ -240,6 +259,9 @@ ax.set_xlabel("Date Added")
 ax.set_ylabel("Count")
 {rotate_label(label, rotation=30) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
+
+# %% [markdown]
+# Out of all the Disney+ shows that were added between 2019 until 2021, there are slightly more movies added compared to TV shows.
 
 # %%
 data = cleaned_df.assign(
@@ -259,6 +281,9 @@ ax.set_xticklabels(list(calendar.month_name[1:]))
 {rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
 
+# %% [markdown]
+# The above plot is not truly representative of the distribution as Disney+ was officialy launched on the month November (a lot of movies are added on that particular launch date)
+
 # %%
 fig, ax = plt.subplots()
 p = sns.histplot(
@@ -277,6 +302,9 @@ ax.set_xticklabels(list(calendar.month_name[1:]))
 {rotate_label(label, rotation=45) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
 
+# %% [markdown]
+# Out of the Disney+ shows added in the launch date November'19, more movies were added compared to TV shows.
+
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "Movie"]
 fig, ax = plt.subplots()
@@ -285,6 +313,9 @@ ax.set_title("Movie Duration vs. Count")
 ax.set_xlabel("Duration (minutes)")
 ax.set_ylabel("Count")
 _ = fig.tight_layout()
+
+# %% [markdown]
+# There are three peaks in the distribution. There are incredibly high amount of 10-mins Disney+ shows, as well as the 40-mins and 90-mins shows.
 
 # %%
 data = cleaned_df[cleaned_df.index.get_level_values("type") == "TV Show"]
@@ -301,6 +332,9 @@ ax.set_xticklabels(labels)
 _ = fig.tight_layout()
 
 # %% [markdown]
+# Most of the Tv shows only last for one seasons and much fewer after finishing the 5th season.
+
+# %% [markdown]
 # Ignore NA values for country
 
 # %%
@@ -314,6 +348,9 @@ ax.set_yscale("log")
 {rotate_label(label, 45) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
 
+# %% [markdown]
+# Most Disney+ shows are produced in english-speaking countries such as the US, UK, Canada, and Australia.
+
 # %%
 data = cleaned_df["listed_in"].explode().sort_values()
 fig, ax = plt.subplots(figsize=(9.6, 4.8))
@@ -325,6 +362,9 @@ ax.set_yscale("log")
 {rotate_label(label, 45) for label in ax.get_xticklabels()}
 _ = fig.tight_layout()
 
+# %% [markdown]
+# The various genres of the movies and tv are listed in the bar plot above with the frequency of each shown.
+
 # %%
 data = cleaned_df["title"].str.len()
 fig, ax = plt.subplots()
@@ -334,6 +374,9 @@ ax.set_xlabel("Title Length (characters)")
 ax.set_ylabel("Count")
 _ = fig.tight_layout()
 
+# %% [markdown]
+# The figure shows the frequency of the title’s length per characters, it can be seen that title with 15 to 17 characters has the highest counts.
+
 # %%
 data = cleaned_df["title"].str.findall(r"\w+").apply(len)
 fig, ax = plt.subplots()
@@ -342,6 +385,9 @@ ax.set_title("Title Length vs. Count")
 ax.set_xlabel("Title Length (words)")
 ax.set_ylabel("Count")
 _ = fig.tight_layout()
+
+# %% [markdown]
+# The bar plot shows title length of the movie per word counts and it can be observed that the highest word count is 3.
 
 # %% [markdown]
 # ### Ignore NA values for cast
@@ -354,6 +400,9 @@ ax.set_title("Movies Played vs. Cast Count")
 ax.set_xlabel("Number of Movies Played")
 ax.set_ylabel("Count")
 _ = fig.tight_layout()
+
+# %% [markdown]
+# 73.0% casts starring in Disney+ shows only stars in one movie,
 
 # %% [markdown]
 # ### Cast Connectivity Graph
@@ -438,4 +487,5 @@ fig.patch.set_facecolor("#131327")  # type: ignore
 fig.tight_layout()
 plt.savefig("test.svg", format="svg")
 
-# %%
+# %% [markdown]
+# The cast connectivity graph plots how casts starring in Disney+ shows are connected to each other. Each nodes represents one cast, casts with bigger nodes means they have played with more casts compared to the smaller nodes. The red nodes (which is the biggest one) is Jim Cummings, the official voice of Winnie the Pooh, who has appeared in almost 400 roles.
