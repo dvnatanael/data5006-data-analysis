@@ -105,9 +105,6 @@ def to_edges(cast: list) -> list:
 
 
 # %% [markdown]
-# ---
-
-# %% [markdown]
 # ## Clean the Data
 
 # %%
@@ -127,9 +124,6 @@ cleaned_df = (
 
 cleaned_df.info()
 cleaned_df  # type: ignore
-
-# %% [markdown]
-# ---
 
 # %% [markdown]
 # ## Plot Features Against Counts
