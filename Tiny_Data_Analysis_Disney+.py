@@ -387,7 +387,16 @@ _ = fig.tight_layout()
 # ### Ignore NA values for cast
 
 # %%
-data = cleaned_df[["cast"]].explode("cast").groupby("cast").size().value_counts()
+data = (
+    cleaned_df["cast"]
+    .dropna()
+    .apply(set)  # type: ignore # convert each list of casts to a set of casts
+    .explode()
+    .to_frame("cast")  # convert the Series into a DataFrame
+    .groupby("cast")
+    .apply(len)  # count the number of movies played by each cast
+    .value_counts()  # count the frequency of each number of movies played
+)
 fig, ax = plt.subplots()
 ax = sns.lineplot(data)
 ax.set_title("Movies Played vs. Cast Count")
